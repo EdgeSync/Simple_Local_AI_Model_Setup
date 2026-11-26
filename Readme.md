@@ -98,6 +98,8 @@ docker run -d \
   ghcr.io/open-webui/open-webui:main
 ```
 
+Once it finishes downloading, and starts, give it about 30-40 seconds and the Webui will become available.
+
 ## 7. Access the UI
 
 Open:
