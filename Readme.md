@@ -86,12 +86,6 @@ curl http://localhost:11434/api/generate \
 
 ## 6. Install Open WebUI
 
-Generate a secret:
-
-``` bash
-openssl rand -hex 32
-```
-
 Run:
 
 ``` bash
@@ -99,7 +93,6 @@ docker run -d \
   --name open-webui \
   --network host \
   --restart unless-stopped \
-  -e WEBUI_SECRET_KEY=YOUR_SECRET_HERE \
   -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
   -v open-webui:/app/backend/data \
   ghcr.io/open-webui/open-webui:main
