@@ -74,6 +74,8 @@ ollama run qwen2.5:7b
 
 ## 5. Test the API
 
+In another terminal, run this:
+
 ``` bash
 curl http://localhost:11434/api/generate \
 -d '{
