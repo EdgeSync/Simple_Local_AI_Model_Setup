@@ -113,6 +113,10 @@ Create your admin account.
 
 After creating your administrator account:
 
+You should see a windows with a prompt entry. In the "Models" option on the bottom of the entry box you should see qwen2.5:7b
+
+If not, it may not be connected. You can add a custom connection like so:
+
 1. Open **Admin Panel → Settings → Connections**.
 2. Click **Add Connection**.
 3. Choose **Ollama**.
