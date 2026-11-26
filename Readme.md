@@ -2,15 +2,19 @@
 
 ## Overview
 
-``` text
+```text
 Ubuntu / Linux Mint Server
 │
-├── Ollama
+├── Ollama (Native systemd service)
 │     ├── Runs the LLM
-│     └── REST API (:11434)
+│     ├── REST API (127.0.0.1:11434)
+│     └── Private to the host
 │
-├── Open WebUI
-│     └── Browser interface (:3000)
+├── Docker
+│     └── Open WebUI
+│           ├── Host networking
+│           ├── Accessible on 0.0.0.0:8080
+│           └── Connects to http://127.0.0.1:11434
 │
 └── Your scripts
       ├── Python
@@ -91,11 +95,11 @@ Run:
 ``` bash
 docker run -d \
   --name open-webui \
+  --network host \
   --restart unless-stopped \
-  -p 3000:8080 \
-  --add-host=host.docker.internal:host-gateway \
-  -v open-webui:/app/backend/data \
   -e WEBUI_SECRET_KEY=YOUR_SECRET_HERE \
+  -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+  -v open-webui:/app/backend/data \
   ghcr.io/open-webui/open-webui:main
 ```
 
@@ -103,11 +107,42 @@ docker run -d \
 
 Open:
 
-    http://YOUR_SERVER_IP:3000
+    http://YOUR_SERVER_IP:8080
 
 Create your admin account.
 
-## 8. Python API
+
+## 8. Configure Open WebUI
+
+After creating your administrator account:
+
+1. Open **Admin Panel → Settings → Connections**.
+2. Click **Add Connection**.
+3. Choose **Ollama**.
+4. Configure:
+
+```
+Name: Local Ollama
+URL:  http://127.0.0.1:11434
+```
+
+5. Save the connection.
+6. Verify that your model (for example `qwen2.5:7b`) appears in the model selector.
+
+## Troubleshooting
+
+If Open WebUI reports **No model selected**:
+
+```bash
+systemctl status ollama
+ollama list
+docker exec open-webui curl http://127.0.0.1:11434/api/tags
+```
+
+If the last command returns your models, the networking is working. Ensure the Ollama connection above exists in Open WebUI.
+
+
+## 9. Python API (OPTIONAL)
 
 ``` bash
 pip install openai
@@ -129,7 +164,13 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-## 9. Optional: Allow LAN Access
+## Security
+
+Keep Ollama bound to `127.0.0.1:11434`.
+
+Expose only Open WebUI on `0.0.0.0:8080` via host networking.
+
+## 10. Optional: Allow LAN Access (Not Recommended)
 
 Configure the Ollama service with:
 
@@ -145,3 +186,4 @@ Restart the service after making the change.
 -   Open WebUI
 -   Qwen2.5 7B
 -   Python + Pandas/Polars
+
